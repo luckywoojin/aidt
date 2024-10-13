@@ -25,7 +25,7 @@ else:
     st.warning('로그인 상태가 아닙니다.')
 
 
-st.subheader('네번째 메뉴입니다.')
+st.subheader('여기는 예비 메뉴지만 진로활동 연계?로 할 수도 있을거 같습니당')
 t1, t2, t3 = st.tabs(['서브31', '서브32', '서브33'])
 with t1:
     st.success('서브31입니다.')
