@@ -25,11 +25,14 @@ else:
     st.warning('로그인 상태가 아닙니다.')
 
 
-st.subheader('세번째 메뉴입니다.')
-t1, t2, t3 = st.tabs(['서브31', '서브32', '서브33'])
+st.subheader('3차시: 데이터셋 기반으로 워드클라우드 해보기')
+t1, t2, t3 = st.tabs(['서브1', '서브2', '서브3'])
 with t1:
-    st.success('서브31입니다.')
+    st.success('서브1입니다.')
+    st.write('빈페이지')
 with t2:
-    st.success('서브32입니다.')
+    st.success('서브2입니다.')
+    st.write('빈페이지')
 with t3:
-    st.success('서브33입니다.')
+    st.success('서브3입니다.')
+    st.write('빈페이지')
