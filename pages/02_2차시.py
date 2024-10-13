@@ -24,25 +24,19 @@ if 'current_user' in st.session_state:
 else:
     st.warning('로그인 상태가 아닙니다.')
 
+st.subheader('2차시: 영상 다시보고 데이터셋 만들기')
 
-st.subheader('두번째 메뉴입니다.')
-
-t1, t2, t3 = st.tabs(['서브21', '서브22', '서브23'])
+t1, t2, t3 = st.tabs(['서브1', '서브2', '서브3'])
 with t1:
-    st.success('서브21입니다.')
+    st.success('서브1입니다.')
     c1, c2 = st.columns((7, 3))
     with c1:
-        url = 'https://youtu.be/qyIbtz-l6q8?si=RMZ9ZJbBdqEdcvmQ'
-        st.video(url)
+        st.write('빈페이지')
     with c2:
-        with st.form('mynoteform'):
-            txtString = st.text_area('정리하기', height=200)
-            if st.form_submit_button('저장하기'): 
-                if txtString != '':
-                    st.info(txtString + '<BR>저장되었습니다.', unsafe_allow_html=True)
-                else:
-                    st.error('노트가 비어 있어요 ㅠㅠㅠ')
+        st.write('빈페이지')
 with t2:
-    st.success('서브22입니다.')
+    st.success('서브2입니다.')
+    st.write('빈페이지')
 with t3:
-    st.success('서브23입니다.')
+    st.success('서브3입니다.')
+    st.write('빈페이지')
