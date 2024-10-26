@@ -1,6 +1,7 @@
 import streamlit as st # 웹 송출 모듈
 import pandas as pd
 import sqlite3 # 데이터베이스 연결 관련 모듈
+from datetime import datetime
 
 ######################## 데이터베이스 관련 #############################
 
@@ -13,7 +14,7 @@ conn_user = conn.cursor()
 conn_2 = sqlite3.connect('question31.db')
 conn_question1 = conn_2.cursor()
 conn_question1.execute('''
-    CREATE TABLE  IF NOT EXISTS question1 (
+    CREATE TABLE  IF NOT EXISTS question31 (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         userid TEXT NOT NULL,
         txtfile TEXT NOT NULL,
@@ -21,11 +22,11 @@ conn_question1.execute('''
     )
 ''') # 만약 question31.db 파일이 존재하지 않는다면 해당 형식으로 생성함.
 
-# question32.db 데이터베이스
+# question32.db 데이터베이스 - 사실 tab3에는 존재하지 않으나 추후 추가할 것을 대비.
 conn_3 = sqlite3.connect('question32.db')
 conn_question2 = conn_3.cursor()
 conn_question2.execute('''
-    CREATE TABLE  IF NOT EXISTS question2 (
+    CREATE TABLE  IF NOT EXISTS question32 (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         userid TEXT NOT NULL,
         txtfile TEXT NOT NULL,
@@ -40,7 +41,7 @@ def add_question2(txtfile):
         return
     else:
         # Insert without the timestamp column
-        conn_question2.execute('INSERT INTO question2 (userid, txtfile) VALUES (?, ?)', (userid, txtfile))
+        conn_question2.execute('INSERT INTO question32 (userid, txtfile) VALUES (?, ?)', (userid, txtfile))
         conn_3.commit()
         st.success('질문이 성공적으로 저장되었습니다!')
 
@@ -51,17 +52,16 @@ def add_question(txtfile):
         return
     else:
         # Insert without the timestamp column
-        conn_question1.execute('INSERT INTO question1 (userid, txtfile) VALUES (?, ?)', (userid, txtfile))
-        conn_2.commit()  # Commit the transaction using conn_2, the connection to question1.db
+        conn_question1.execute('INSERT INTO question31 (userid, txtfile) VALUES (?, ?)', (userid, txtfile))
+        conn_2.commit()  # Commit the transaction using conn_2, the connection to question31.db
         st.success('질문이 성공적으로 저장되었습니다!')
         
-
 ######################## 로그인 상태 확인 #############################
 
 # 로그인 중인 유저의 정보를 가져오는 함수
 def get_current_user_info(userid):
-    conn_user.execute('SELECT email, user_type FROM users WHERE userid = ?', (userid,))
-    return conn_user.fetchone()  # (email, user_type) 형태로 반환됨
+    conn_user.execute('SELECT name, email, user_type FROM users WHERE userid = ?', (userid,))
+    return conn_user.fetchone()  # (name, email, user_type) 형태로 반환됨
 
 if 'login_status' not in st.session_state: # 만약 사용자가 비로그인 상태라면.. login_status는 False.
     st.session_state['login_status'] = False
@@ -73,8 +73,25 @@ if 'uploaded_files' not in st.session_state:
 if 'current_user' in st.session_state:
     user_info = get_current_user_info(st.session_state['current_user'])
     if user_info:
-        email, user_type = user_info  # 튜플에서 이메일과 사용자 유형 추출
-        st.success(f'로그인한 사용자: {st.session_state["current_user"]}, 이메일: {email}, 사용자 유형: {user_type}')
+        name, email, user_type = user_info  # 튜플에서 이름, 이메일, 사용자 유형 추출
+        user_id = st.session_state['current_user']  # current_user에서 user_id 추출
+        st.success(f'{name}({user_id}) {user_type}, 접속을 환영합니다.')
+
+# 사용자 정보 가져오기 함수
+def get_users():
+    conn_user.execute('SELECT userid, passwd, email, user_type, name FROM users')  # 모든 열을 명시적으로 선택
+    return conn_user.fetchall()
+
+#log 관련 db불러오기
+l = sqlite3.connect('log.db')
+log_cursor = l.cursor()  # 커서 객체 생성
+
+def log_record(page, tab):
+    date = datetime.now().isoformat()
+    l.execute('INSERT INTO log (userid, name, page, tab, date) VALUES (?, ?, ?, ?, ?)', (user_id, name, page, tab, date))
+    l.commit()
+
+######################## 여기부터 진짜 페이지 구성 시작 #############################
 
 if st.session_state['login_status']:
     st.subheader('3차시: 데이터셋 기반으로 워드클라우드 해보기')
@@ -82,7 +99,7 @@ if st.session_state['login_status']:
     t1, t2, t3, t4, t5, t6, t7 = st.tabs(['복습, 질문', '학습목표', '워드클라우드란', '파이썬 코딩', '학습정리', '자료제출', '선생님탭'])
 
     with t1:
-        st.success('서브1입니다.')
+        log_record(3,1)
         st.subheader('몸풀기 퀴즈 🙋‍♂️')
         answer = st.radio("장애 인식 개선을 위한 첫 번째 단계는 무엇인가요?", 
                         ('정보 제공', '정신적 지원', '물리적 접근성 개선'))
@@ -100,12 +117,9 @@ if st.session_state['login_status']:
         st.markdown('<p style="font-size: 17px;">다른 조와 데이터 셋을 공유하는 시간입니다.</p>', unsafe_allow_html=True)
         st.success('다른 조원이 작성한 데이터 셋과 비교하며, 자신이 작성한 내용을 점검해 보아요.')
         st.markdown("[데이터셋 공유 폴더(구글 드라이브)](https://drive.google.com/drive/folders/1eSEK2nEWM030_td1KuDUQiC1kOpm4cmP?usp=sharin0g)", unsafe_allow_html=True)
-        import streamlit.components.v1 as components
-        url = 'https://padlet.com/asdsadasda/padlet-xlvwdduymrs9vu7l'
-        components.iframe(url, width=1024, height=768)
 
     with t2:
-        st.success('서브2입니다.')
+        log_record(3,2)
         with st.expander('학습목표'):
                 st.subheader('오늘은 이러한 것을 배워봅시다.')
                 txtdata = '''
@@ -117,6 +131,7 @@ if st.session_state['login_status']:
                 st.markdown(txtdata, unsafe_allow_html=True)
 
     with t3:
+        log_record(3,3)
         st.success('워드클라우드란?')
         st.markdown('문서의 문구와 단어를 분석하여 중요도나 사용 빈도를 직관적으로 파악할 수 있도록 시각화하는 표현 기법.')
 
@@ -127,9 +142,9 @@ if st.session_state['login_status']:
         import streamlit.components.v1 as components
         url = 'https://wordcloud.kr/'
         components.iframe(url, width=1024, height=1200)
-        
-        
+                
     with t4:
+        log_record(3,4)
         st.subheader("파이썬 코딩 실습")
         import io
         import contextlib
@@ -169,7 +184,7 @@ if st.session_state['login_status']:
         st.markdown("[데이터셋 공유 폴더(구글 코랩)](https://colab.research.google.com)", unsafe_allow_html=True)
 
     with t5:
-        st.success('서브4입니다.')
+        log_record(3,5)
         c1, c2 = st.columns((7, 3))
         with c1:
             with st.expander('오늘의 학습을 정리해봅시다.'):
@@ -210,7 +225,7 @@ if st.session_state['login_status']:
                     
                     # Display only user-specific questions for question1
                     st.write("About: 질문 탭")
-                    conn_question1.execute('SELECT id, txtfile, timestamp FROM question1 WHERE userid = ? ORDER BY timestamp DESC', (user_id,))
+                    conn_question1.execute('SELECT id, txtfile, timestamp FROM question31 WHERE userid = ? ORDER BY timestamp DESC', (user_id,))
                     questions11 = conn_question1.fetchall()
                     if questions11:
                         df_questions = pd.DataFrame(questions11, columns=["ID", "Question", "Timestamp"])
@@ -219,8 +234,10 @@ if st.session_state['login_status']:
                         st.warning("현재 저장된 질문이 없습니다.")
 
     with t6:
+        log_record(3,6)
         uploaded_file = st.file_uploader("만든 워드 클라우드 이미지를 업로드하세요", type=['jpg', 'png', 'jpeg'])
 
+############### 파일 업로드(주요과제) ####################33
     # 파일 업로드 확인
     if uploaded_file is not None:
         st.success("파일이 업로드되었습니다.")
@@ -235,7 +252,10 @@ if st.session_state['login_status']:
             'timestamp': datetime.now()
         })
 
+##############################################################
+
     with t7:
+        log_record(3,7)
         if st.session_state['login_status'] and st.session_state['current_user'] == 'admin':
             with st.expander('이 탭이 무엇인지 궁금하신가요?'):
                 st.subheader('여기는..')
@@ -244,48 +264,9 @@ if st.session_state['login_status']:
                 '''
                 st.markdown(txtdata, unsafe_allow_html=True)
 
-            if st.session_state['uploaded_files']:
-
-                # 'uploaded_files' 키 초기화
-                if 'uploaded_files' not in st.session_state:
-                    st.session_state['uploaded_files'] = []  
-
-                # 파일 목록을 시간순으로 정렬 (최신 파일이 상단에 오도록)
-                uploaded_files_sorted = sorted(st.session_state['uploaded_files'], key=lambda x: x['timestamp'], reverse=True)
-                
-                # DataFrame 생성
-                df_files = pd.DataFrame([{
-                    'User ID': file_info['user_id'],
-                    'File Name': file_info['file'].name,
-                    'Timestamp': file_info['timestamp']
-                } for file_info in uploaded_files_sorted])
-
-                # DataFrame을 테이블 형식으로 표시
-                st.dataframe(df_files)
-
-                # 다운로드할 파일 선택을 위한 메뉴바
-                file_names = [file_info['file'].name for file_info in uploaded_files_sorted]
-                selected_file_name = st.selectbox("다운로드할 파일을 선택하세요:", file_names)
-
-                # 선택된 파일의 정보 찾기
-                selected_file_info = next((file_info for file_info in uploaded_files_sorted if file_info['file'].name == selected_file_name), None)
-
-                if selected_file_info:
-                    # 동일한 파일에 대해 동일한 키 사용
-                    st.download_button(
-                        label=f"{selected_file_info['user_id']}님의 파일 다운로드 ({selected_file_info['file'].name})",
-                        data=selected_file_info['file'],
-                        file_name=selected_file_info['file'].name,
-                        mime=selected_file_info['file'].type,
-                        key=f"download_button_{selected_file_info['file'].name}"  # 파일 이름으로 고유 키 생성
-    )
-            else:
-                st.warning("제출된 파일이 없습니다.")
-
-            
             # 질문1 불러오기
             st.write("About: 질문 탭")
-            conn_question1.execute('SELECT id, userid, txtfile, timestamp FROM question1 ORDER BY timestamp DESC')
+            conn_question1.execute('SELECT id, userid, txtfile, timestamp FROM question31 ORDER BY timestamp DESC')
             questions = conn_question1.fetchall()
             if questions:
                 # Create a DataFrame from the fetched questions
@@ -295,22 +276,22 @@ if st.session_state['login_status']:
                 st.dataframe(df_questions)
 
                 # Select a question to delete by ID
-                question_id_to_delete = st.selectbox("지울 질문의 ID를 선택하세요.", df_questions["ID"].tolist())
-
-                # Button to delete the selected question
-                if st.button(f"질문 삭제하기 ID: {question_id_to_delete}", key=f"delete_button_{question_id_to_delete}"):
-                    conn_question1.execute('DELETE FROM question1 WHERE id = ?', (question_id_to_delete,))
+                question_id_to_delete = st.selectbox("지울 질문의 ID를 선택하세요.", df_questions["ID"].tolist(), key="delete_selectbox_1")
+                
+                # Button to delete the selected question with a unique key
+                if st.button(f"질문 삭제하기 ID: {question_id_to_delete}", key=f"delete_button_1_{question_id_to_delete}"):
+                    conn_question1.execute('DELETE FROM question31 WHERE id = ?', (question_id_to_delete,))
                     conn_2.commit()  # Commit the transaction
                     st.success(f'질문 ID {question_id_to_delete}이(가) 성공적으로 삭제되었습니다!')
                     # Refresh the DataFrame after deletion
-                    conn_question1.execute('SELECT id, userid, txtfile, timestamp FROM question1 ORDER BY timestamp DESC')
+                    conn_question1.execute('SELECT id, userid, txtfile, timestamp FROM question31 ORDER BY timestamp DESC')
                     questions = conn_question1.fetchall()
                     df_questions = pd.DataFrame(questions, columns=["ID", "User ID", "Question", "Timestamp"])
                     st.dataframe(df_questions)  # Display updated DataFrame
 
             # 질문2 불러오기
             st.write("About: 질문2 탭")
-            conn_question2.execute('SELECT id, userid, txtfile, timestamp FROM question2 ORDER BY timestamp DESC')
+            conn_question2.execute('SELECT id, userid, txtfile, timestamp FROM question32 ORDER BY timestamp DESC')
             questions2 = conn_question2.fetchall()
             if questions2:
                 # Create a DataFrame from the fetched questions
@@ -319,16 +300,16 @@ if st.session_state['login_status']:
                 # Display the DataFrame
                 st.dataframe(df_questions)
 
-                # Select a question to delete by ID
-                question_id_to_delete = st.selectbox("지울 질문의 ID를 선택하세요.", df_questions["ID"].tolist())
+                # 질문2 - Select a question to delete by ID with a unique key
+                question_id_to_delete2 = st.selectbox("지울 질문의 ID를 선택하세요.", df_questions["ID"].tolist(), key="delete_selectbox_2")
 
-                # Button to delete the selected question
-                if st.button(f"질문 삭제하기 ID: {question_id_to_delete}", key=f"delete_button2_{question_id_to_delete}"):
+                # Button to delete the selected question with a unique key
+                if st.button(f"질문 삭제하기 ID: {question_id_to_delete2}", key=f"delete_button_2_{question_id_to_delete2}"):
                     conn_question2.execute('DELETE FROM question2 WHERE id = ?', (question_id_to_delete,))
                     conn_3.commit()  # Commit the transaction
                     st.success(f'질문 ID {question_id_to_delete}이(가) 성공적으로 삭제되었습니다!')
                     # Refresh the DataFrame after deletion
-                    conn_question2.execute('SELECT id, userid, txtfile, timestamp FROM question2 ORDER BY timestamp DESC')
+                    conn_question2.execute('SELECT id, userid, txtfile, timestamp FROM question32 ORDER BY timestamp DESC')
                     questions2 = conn_question2.fetchall()
                     df_questions = pd.DataFrame(questions2, columns=["ID", "User ID", "Question", "Timestamp"])
                     st.dataframe(df_questions)  # Display updated DataFrame
