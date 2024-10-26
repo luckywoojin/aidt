@@ -1,6 +1,7 @@
 import streamlit as st # 웹 송출 모듈
 import pandas as pd
 import sqlite3 # 데이터베이스 연결 관련 모듈
+from datetime import datetime
 
 ######################## 데이터베이스 관련 #############################
 
@@ -13,8 +14,8 @@ conn_user = conn.cursor()
 
 # 로그인 중인 유저의 정보를 가져오는 함수
 def get_current_user_info(userid):
-    conn_user.execute('SELECT email, user_type FROM users WHERE userid = ?', (userid,))
-    return conn_user.fetchone()  # (email, user_type) 형태로 반환됨
+    conn_user.execute('SELECT name, email, user_type FROM users WHERE userid = ?', (userid,))
+    return conn_user.fetchone()  # (name, email, user_type) 형태로 반환됨
 
 if 'login_status' not in st.session_state: # 만약 사용자가 비로그인 상태라면.. login_status는 False.
     st.session_state['login_status'] = False
@@ -23,14 +24,27 @@ if 'login_status' not in st.session_state: # 만약 사용자가 비로그인 �
 if 'current_user' in st.session_state:
     user_info = get_current_user_info(st.session_state['current_user'])
     if user_info:
-        email, user_type = user_info  # 튜플에서 이메일과 사용자 유형 추출
-        st.success(f'로그인한 사용자: {st.session_state["current_user"]}, 이메일: {email}, 사용자 유형: {user_type}')
+        name, email, user_type = user_info  # 튜플에서 이름, 이메일, 사용자 유형 추출
+        user_id = st.session_state['current_user']  # current_user에서 user_id 추출
+        st.success(f'{name}({user_id}) {user_type}, 접속을 환영합니다.')
+
+#log 관련 db불러오기
+l = sqlite3.connect('log.db')
+log_cursor = l.cursor()  # 커서 객체 생성
+
+def log_record(page, tab):
+    date = datetime.now().isoformat()
+    l.execute('INSERT INTO log (userid, name, page, tab, date) VALUES (?, ?, ?, ?, ?)', (user_id, name, page, tab, date))
+    l.commit()
+
+######################## 여기부터 진짜 페이지 구성 시작 #############################
 
 if st.session_state['login_status']:
     st.subheader('예비차시: 진로 활동?')
     t1, t2, t3, t4, t5 = st.tabs(['복습, 질문', '발표하기', '평가하기', '학습정리', '선생님탭'])
 
     with t1:
+        log_record(7,1)
         st.success('서브1입니다.')
         c1, c2 = st.columns((7, 3))
         with c1:
@@ -39,6 +53,7 @@ if st.session_state['login_status']:
             st.write('빈페이지')
 
     with t2:
+        log_record(7,2)
         st.success('서브2입니다.')
         with st.expander('학습목표'):
                 st.subheader('오늘은 이러한 것을 배워봅시다.')
@@ -51,10 +66,12 @@ if st.session_state['login_status']:
                 st.markdown(txtdata, unsafe_allow_html=True)
 
     with t3:
+        log_record(7,3)
         st.success('서브3입니다.')
         st.write('빈페이지')
 
     with t4:
+        log_record(7,4)
         st.success('서브4입니다.')
         c1, c2 = st.columns((7, 3))
         with c1:
@@ -78,6 +95,7 @@ if st.session_state['login_status']:
             st.write('미정')
 
     with t5:
+        log_record(7,5)
         if st.session_state['login_status'] and st.session_state['current_user'] == 'admin':
             st.write('빈페이지')
         else:
