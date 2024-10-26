@@ -22,7 +22,7 @@ c.execute('''
         email TEXT,
         file_data type,
         user_type TEXT,
-        name TEST
+        name TEXT
     )
 ''')
 conn.commit()
