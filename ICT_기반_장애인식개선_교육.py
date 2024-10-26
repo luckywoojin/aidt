@@ -52,14 +52,9 @@ def check_user(userid, passwd):
 
 ######################## 유저 정보 가져오기, 로그 관련 함수 #############################
 
-# user.db 데이터베이스
-conn = sqlite3.connect('users.db')
-conn_user = conn.cursor()
-
-# 로그인 중인 유저의 정보를 가져오는 함수
 def get_current_user_info(userid):
-    conn_user.execute('SELECT name, email, user_type FROM users WHERE userid = ?', (userid,))
-    return conn_user.fetchone()  # (name, email, user_type) 형태로 반환됨
+    c.execute('SELECT name, email, user_type FROM users WHERE userid = ?', (userid,))
+    return c.fetchone()  # (name, email, user_type) 형태로 반환됨
 
 # 사용자 정보 가져오기 함수
 def get_users():
@@ -112,10 +107,10 @@ if 'current_user' in st.session_state:
         user_id = st.session_state['current_user']  # current_user에서 user_id 추출
         st.success(f'{name}({user_id}) {user_type}, 접속을 환영합니다.')
 
-# 사용자 추가 함수
 def add_user(userid, passwd, email, user_type, name):
-    c.execute('INSERT INTO users (userid, passwd, email, user_type, name) VALUES (?, ?, ?, ?, ?)', (userid, passwd, email, user_type,name))
-    conn.commit()
+    c.execute('INSERT INTO users (userid, passwd, email, user_type, name) VALUES (?, ?, ?, ?, ?)', 
+              (userid, passwd, email, user_type, name))
+    conn.commit()  # 변경 사항을 커밋해야 함
 
 ######################## 여기부터 진짜 내용 시작 #############################
 
@@ -160,7 +155,8 @@ with t1:
                     if user:
                         st.session_state['login_status'] = True
                         st.session_state['current_user'] = userid
-                        st.success(f'({userid})님, 로그인에 성공하였습니다.')
+                        name, email, user_type = get_current_user_info(userid)  # 사용자 정보 가져오기
+                        st.success(f'{name}님, 로그인에 성공하였습니다.')
                     else:
                         st.error('잘못된 사용자 ID 또는 비밀번호입니다.')
                 else:
@@ -242,7 +238,6 @@ with t1:
                             else:
                                 add_user(userid, passwd, email, user_type, name)  # 사용자 유형 추가
                                 st.success('등록 성공')
-                                # No rerun, let the user see the updated state
                     else:
                         st.error('모든 정보를 입력해야 합니다.')
 
