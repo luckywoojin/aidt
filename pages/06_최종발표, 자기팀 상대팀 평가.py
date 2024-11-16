@@ -51,7 +51,6 @@ if st.session_state['login_status']:
 
     with t1:
         log_record(6,1)
-        st.success('서브1입니다.')
         c1, c2 = st.columns((7, 3))
         with c1:
             st.write('빈페이지')    
@@ -61,7 +60,6 @@ if st.session_state['login_status']:
 
     with t2:
         log_record(6,2)
-        st.success('서브2입니다.')
         with st.expander('학습목표'):
                 st.subheader('오늘은 이러한 것을 배워봅시다.')
                 txtdata = '''
@@ -74,12 +72,12 @@ if st.session_state['login_status']:
 
     with t3:
         log_record(6,3)
-        st.success('서브3입니다.')
-        st.write('빈페이지')
+        import streamlit.components.v1 as components
+        url = 'https://forms.gle/9rpPpi3cKJUtBu8x7'
+        components.iframe(url, width=1024, height=5000)
 
     with t4:
         log_record(6,4)
-        st.success('서브4입니다.')
         c1, c2 = st.columns((7, 3))
         with c1:
             with st.expander('오늘의 학습을 정리해봅시다.'):
