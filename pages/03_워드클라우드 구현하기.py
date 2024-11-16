@@ -106,7 +106,7 @@ if st.session_state['login_status']:
     if selected_tab == '복습, 질문':
         log_record(3,1)
         st.markdown("---")
-        st.subheader('접속 링크: https://aidtapp3.streamlit.app/')
+        st.subheader('접속 링크: https://aidtapp.streamlit.app/')
         st.subheader('아이디/비번 : student / 123456')
         st.markdown("---")
         st.subheader("전차시 복습")
