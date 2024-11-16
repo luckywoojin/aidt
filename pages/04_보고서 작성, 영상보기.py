@@ -56,6 +56,10 @@ def add_question2(txtfile):
         conn_3.commit()
         st.success('질문이 성공적으로 저장되었습니다!')
 
+# 이미지 DB 불러오기
+conn = sqlite3.connect("uploaded_files.db")
+cursor = conn.cursor()
+
 ######################## 로그인 상태 확인 #############################
 
 # 로그인 중인 유저의 정보를 가져오는 함수
@@ -114,8 +118,48 @@ if st.session_state['login_status']:
 
     with t3:
         log_record(4,3)
-        st.success('서브3입니다.')
-        st.write('빈페이지')
+        c1, c2 = st.columns((5, 5))
+        with c1:
+            # SQLite 데이터베이스 연결
+            conn = sqlite3.connect("uploaded_files.db")
+            cursor = conn.cursor()
+
+            def get_latest_image(user_id):
+                # 해당 user_id의 최신 이미지 불러오기
+                cursor.execute("""
+                    SELECT file_name, file_data, timestamp 
+                    FROM uploaded_files 
+                    WHERE user_id = ? 
+                    ORDER BY timestamp DESC 
+                    LIMIT 1
+                """, (user_id,))
+                return cursor.fetchone()
+
+            if 'current_user' in st.session_state:  # 로그인한 사용자가 있는지 확인
+                user_id = st.session_state['current_user']
+                latest_image = get_latest_image(user_id)
+
+                if latest_image:
+                    file_name, file_data, timestamp = latest_image
+                    st.image(file_data, caption=f"Latest image of {user_id} - {file_name} (Uploaded at {timestamp})", use_column_width=True)
+                else:
+                    st.warning("현재 저장된 이미지가 없습니다.")
+        with c2:
+            conn = sqlite3.connect('question21.db')
+            conn_question21 = conn.cursor()
+
+             # 질문 1의 자신의 답변에 대해 볼 수 있게 하는 기능
+            if st.session_state['login_status'] and 'current_user' in st.session_state:
+                    user_id = st.session_state['current_user']
+                    st.write("자신이 작성한 대본 보기")
+                    conn_question21.execute('SELECT id, txtfile, timestamp FROM question21 WHERE userid = ? ORDER BY timestamp DESC', (user_id,))
+                    questions21 = conn_question21.fetchall()
+                    if questions21:
+                        df_questions = pd.DataFrame(questions21, columns=["ID", "Question", "Timestamp"])
+                        st.dataframe(df_questions)
+                    else:
+                        st.warning("현재 저장된 질문이 없습니다.")
+
 
     with t4:
         log_record(4,4)
