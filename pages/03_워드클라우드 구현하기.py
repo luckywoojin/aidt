@@ -174,6 +174,7 @@ if st.session_state['login_status']:
         st.subheader("워드 클라우드란?")
         c1, c2 = st.columns((7, 3))
         with c1:
+            st.image('./images/03_what_is_this.png')
             st.image('./images/03_wordcloud1.png')
             st.image('./images/03_wordcloud2.png')
         with c2:
