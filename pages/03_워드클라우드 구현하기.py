@@ -177,6 +177,8 @@ if st.session_state['login_status']:
             st.image('./images/03_what_is_this.png')
             st.image('./images/03_wordcloud1.png')
             st.image('./images/03_wordcloud2.png')
+            st.image('./images/03_wordcloud3.png')
+            st.image('./images/03_wordcloud4.png')
         with c2:
             # 워드 클라우드에 관한 내용을 메모하도록 유도    
             with st.form('mynoteform'):
