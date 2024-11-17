@@ -114,10 +114,11 @@ def add_user(userid, passwd, email, user_type, name):
 
 ######################## 여기부터 진짜 내용 시작 #############################
 
-c1, c2 = st.columns(2)
+c1, c2 = st.columns((6, 4))
 with c1:
     st.title('정보통신기술(ICT) 기반 장애 인식 개선 교육 프로그램')
-    st.image('./images/01.png')
+    st.image('./images/01_main_page.png')
+    st.image('./images/01_howto_connet.png')
 
 # Tabs for login, register, and admin
 with c2:
