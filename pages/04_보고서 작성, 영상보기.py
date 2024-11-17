@@ -136,7 +136,7 @@ if st.session_state['login_status']:
 
             if 'current_user' in st.session_state:  # 로그인한 사용자가 있는지 확인
                 user_id = st.session_state['current_user']
-                latest_image = get_latest_image(userid)
+                latest_image = get_latest_image(user_id)
 
                 if latest_image:
                     file_name, file_data, timestamp = latest_image
