@@ -92,20 +92,19 @@ def log_record(page, tab):
 if st.session_state['login_status']:
     st.subheader('4차시: 분석을 기반으로한 보고서 작성, 인식제고영상 보기')
 
-    t1, t2, t3, t4, t5, t6 = st.tabs(['복습, 질문', '학습목표', '워드클라우드와 핵심 단어 데이터셋 비교', '인식제고영상', '학습정리', '선생님탭'])
+    tabs = ['복습, 질문', '학습목표', '워드클라우드와 핵심 단어 데이터셋 비교', '인식제고영상', '학습정리', '선생님탭']
+    selected_tab = st.sidebar.radio("탭 선택", tabs)
 
-    with t1:
+    if selected_tab == '복습, 질문':
         log_record(4,1)
-        st.success('서브1입니다.')
         c1, c2 = st.columns((7, 3))
         with c1:
             st.write('빈페이지')
         with c2:
             st.write('빈페이지')
 
-    with t2:
+    elif selected_tab == '학습목표':
         log_record(4,2)
-        st.success('서브2입니다.')
         with st.expander('학습목표'):
                 st.subheader('오늘은 이러한 것을 배워봅시다.')
                 txtdata = '''
@@ -116,7 +115,7 @@ if st.session_state['login_status']:
         '''
                 st.markdown(txtdata, unsafe_allow_html=True)
 
-    with t3:
+    elif selected_tab == '워드클라우드와 핵심 단어 데이터셋 비교':
         log_record(4,3)
         c1, c2 = st.columns((5, 5))
         with c1:
@@ -160,10 +159,8 @@ if st.session_state['login_status']:
                     else:
                         st.warning("현재 저장된 질문이 없습니다.")
 
-
-    with t4:
+    elif selected_tab == '인식제고영상':
         log_record(4,4)
-        st.success('서브4입니다.')
         c1, c2 = st.columns((7, 3))
         with c1:
             url = 'https://youtu.be/qyIbtz-l6q8?si=RMZ9ZJbBdqEdcvmQ'
@@ -196,9 +193,8 @@ if st.session_state['login_status']:
                     else:
                         st.warning("현재 저장된 질문이 없습니다.")
         
-    with t5:
+    elif selected_tab == '학습정리':
         log_record(4,5)
-        st.success('서브5입니다.')
         c1, c2 = st.columns((7, 3))
         with c1:
             with st.expander('오늘의 학습을 정리해봅시다.'):
@@ -244,7 +240,7 @@ if st.session_state['login_status']:
                     else:
                         st.warning("현재 저장된 질문이 없습니다.")
 
-    with t6:
+    elif selected_tab == '선생님탭':
         log_record(4,6)
         if st.session_state['login_status'] and st.session_state['current_user'] == 'admin':
             # 질문1 불러오기
