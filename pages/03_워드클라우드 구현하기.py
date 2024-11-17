@@ -228,6 +228,7 @@ if st.session_state['login_status']:
         c1, c2 = st.columns((7, 3))
         with c1:
             st.image('./images/05_python1.png')
+            st.image('./images/05_discuss.png')
             st.image('./images/05_python2.png')
             st.image('./images/05_python3.png')
 
