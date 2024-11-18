@@ -47,9 +47,10 @@ def log_record(page, tab):
 if st.session_state['login_status']:
     st.subheader('6차시: 최종발표, 발표 듣고 자기팀과 상대팀 평가하기')
 
-    t1, t2, t3, t4, t5 = st.tabs(['복습, 질문', '발표하기', '평가하기', '학습정리', '선생님탭'])
+    tabs = ['복습, 질문', '발표하기', '평가하기', '학습정리', '선생님탭']
+    selected_tab = st.sidebar.radio("탭 선택", tabs)
 
-    with t1:
+    if selected_tab == '복습, 질문':
         log_record(6,1)
         c1, c2 = st.columns((7, 3))
         with c1:
@@ -58,7 +59,7 @@ if st.session_state['login_status']:
         with c2:
             st.write('빈페이지')
 
-    with t2:
+    elif selected_tab == '발표하기':
         log_record(6,2)
         with st.expander('학습목표'):
                 st.subheader('오늘은 이러한 것을 배워봅시다.')
@@ -70,13 +71,13 @@ if st.session_state['login_status']:
         '''
                 st.markdown(txtdata, unsafe_allow_html=True)
 
-    with t3:
+    elif selected_tab == '평가하기':
         log_record(6,3)
         import streamlit.components.v1 as components
         url = 'https://forms.gle/9rpPpi3cKJUtBu8x7'
         components.iframe(url, width=1024, height=5000)
 
-    with t4:
+    elif selected_tab == '학습정리':
         log_record(6,4)
         c1, c2 = st.columns((7, 3))
         with c1:
@@ -99,7 +100,7 @@ if st.session_state['login_status']:
         with c2:
             st.write('미정')
 
-    with t5:
+    elif selected_tab == '선생님탭':
         log_record(6,5)
         if st.session_state['login_status'] and st.session_state['current_user'] == 'admin':
             st.write('빈페이지')
