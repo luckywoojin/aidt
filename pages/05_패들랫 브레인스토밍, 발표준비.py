@@ -47,9 +47,10 @@ def log_record(page, tab):
 if st.session_state['login_status']:
     st.subheader('5차시: 패들랫을 토대로 브레인스토밍하고 발표 준비하기')
 
-    t1, t2, t3, t4, t5, t6 = st.tabs(['복습, 질문', '학습목표', '패들랫 브레인 스토밍', '발표준비하기', '학습정리', '선생님탭'])
+    tabs = ['복습, 질문', '학습목표', '패들랫 브레인 스토밍', '발표준비하기', '학습정리', '선생님탭']
+    selected_tab = st.sidebar.radio("탭 선택", tabs)
 
-    with t1:
+    if selected_tab == '복습, 질문':
         log_record(5,1)
         c1, c2 = st.columns((7, 3))
         with c1:
@@ -57,7 +58,7 @@ if st.session_state['login_status']:
         with c2:
             st.write('빈페이지')
 
-    with t2:
+    elif selected_tab == '학습목표':
         log_record(5,2)
         with st.expander('학습목표'):
                 st.subheader('오늘은 이러한 것을 배워봅시다.')
@@ -69,7 +70,7 @@ if st.session_state['login_status']:
         '''
                 st.markdown(txtdata, unsafe_allow_html=True)
 
-    with t3:
+    elif selected_tab == '패들랫 브레인 스토밍':
         log_record(5,3)
         import streamlit.components.v1 as components
         url = 'https://padlet.com/asdsadasda/padlet-xlvwdduymrs9vu7l'
@@ -77,7 +78,7 @@ if st.session_state['login_status']:
 
         st.markdown("[패들랫 바로가기(로그인하려면 여기로)](https://padlet.com/asdsadasda/padlet-xlvwdduymrs9vu7l)", unsafe_allow_html=True)
 
-    with t4:
+    elif selected_tab == '발표준비하기':
         log_record(5,4)
         c1, c2 = st.columns((7, 3))
         with c1:
@@ -85,7 +86,7 @@ if st.session_state['login_status']:
         with c2:
             st.write('미정')
 
-    with t5:
+    elif selected_tab == '학습정리':
         log_record(5,5)
         c1, c2 = st.columns((7, 3))
         with c1:
@@ -106,7 +107,7 @@ if st.session_state['login_status']:
         '''
                 st.markdown(txtdata, unsafe_allow_html=True)
 
-    with t6:
+    elif selected_tab == '선생님탭':
         log_record(5,6)
         if st.session_state['login_status'] and st.session_state['current_user'] == 'admin':
             st.write('빈페이지')
