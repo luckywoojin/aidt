@@ -41,9 +41,11 @@ def log_record(page, tab):
 
 if st.session_state['login_status']:
     st.subheader('예비차시: 진로 활동?')
-    t1, t2, t3, t4, t5 = st.tabs(['복습, 질문', '발표하기', '평가하기', '학습정리', '선생님탭'])
 
-    with t1:
+    tabs = ['복습, 질문', '발표하기', '평가하기', '학습정리', '선생님탭']
+    selected_tab = st.sidebar.radio("탭 선택", tabs)
+
+    if selected_tab == '복습, 질문':
         log_record(7,1)
         st.success('서브1입니다.')
         c1, c2 = st.columns((7, 3))
@@ -52,7 +54,7 @@ if st.session_state['login_status']:
         with c2:
             st.write('빈페이지')
 
-    with t2:
+    elif selected_tab == '발표하기':
         log_record(7,2)
         st.success('서브2입니다.')
         with st.expander('학습목표'):
@@ -65,12 +67,12 @@ if st.session_state['login_status']:
         '''
                 st.markdown(txtdata, unsafe_allow_html=True)
 
-    with t3:
+    elif selected_tab == '평가하기':
         log_record(7,3)
         st.success('서브3입니다.')
         st.write('빈페이지')
 
-    with t4:
+    elif selected_tab == '학습정리':
         log_record(7,4)
         st.success('서브4입니다.')
         c1, c2 = st.columns((7, 3))
@@ -94,7 +96,7 @@ if st.session_state['login_status']:
         with c2:
             st.write('미정')
 
-    with t5:
+    elif selected_tab == '선생님탭':
         log_record(7,5)
         if st.session_state['login_status'] and st.session_state['current_user'] == 'admin':
             st.write('빈페이지')
